@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script type="module"
+    src="https://cdn.jsdelivr.net/npm/@microsoft/fast-components/dist/fast-components.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body>
+
+  <header>
+    <nav>
+      <ol class="flex gap-2 px-8 py-2">
+        <li><fast-anchor href="index.html">
+            <h1>Arizonask</h1>
+          </fast-anchor></li>
+        <li><fast-anchor href="create.html">Create Todo</fast-anchor></li>
+      </ol>
+    </nav>
+  </header>
+
+  <div class="border-2 border-slate-300 rounded w-11/12 mx-auto my-2"></div>
+
+  <main class="flex flex-wrap gap-2">
+  </main>
+
+  <script>
+    function createTodo(todoElement) {
+      const div = document.createElement("div");
+      div.classList.add(todoElement.status, `${ todoElement.status == "on" ? "opacity-100" : "opacity-70" }`);
+
+      const fastCard = document.createElement("fast-card");
+      fastCard.style = `width: 250px; margin: 2rem; background-color: ${todoElement.color}; max-height: max-content;`;
+
+      const innerDiv = document.createElement("div");
+      innerDiv.style = "padding: 0 10px 10px; color: var(--neutral-foreground-rest);";
+
+      const h2 = document.createElement("h2");
+      h2.classList.add("text-2xl", "text-center", "p-2", "font-sans", "font-bold");
+      h2.textContent = todoElement.title;
+
+      const p = document.createElement("p");
+      p.classList.add("font-mono", "font-bold", "p-2");
+      p.textContent = todoElement.content;
+
+      const fastButtonEdit = document.createElement("fast-button");
+      fastButtonEdit.classList.add("mx-2");
+      fastButtonEdit.innerHTML = "<a href=\"edit.html\">Edit</a>";
+
+      const fastButtonDelete = document.createElement("fast-button");
+      fastButtonDelete.textContent = "Delete";
+
+      innerDiv.appendChild(h2);
+      innerDiv.appendChild(p);
+      innerDiv.appendChild(fastButtonEdit);
+      innerDiv.appendChild(fastButtonDelete);
+
+      fastCard.appendChild(innerDiv);
+
+      div.appendChild(fastCard);
+
+      return div;
+    }
+
+    const { invoke } = window.__TAURI__.tauri;
+
+    invoke("get_todos", {}).then((result) => {
+
+      const fragment = document.createDocumentFragment();
+
+      result.forEach(el => fragment.appendChild(createTodo(el)));
+
+      document.querySelector("main").appendChild(fragment);
+
+    }).catch((err) => {
+      console.error(err);
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script type="module"
+        src="https://cdn.jsdelivr.net/npm/@microsoft/fast-components/dist/fast-components.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <ol class="flex gap-2 px-8 py-2">
+                <li><fast-anchor href="index.html">
+                        <h1>Arizonask</h1>
+                    </fast-anchor></li>
+                <li><fast-anchor href="create.html">Create Todo</fast-anchor></li>
+            </ol>
+        </nav>
+    </header>
+
+    <div class="border-2 border-slate-300 rounded w-11/12 mx-auto my-2"></div>
+
+    <main>
+        <form action="" method="post" class="bg-gray-300 w-6/12 mx-auto flex flex-col place-items-center">
+            <div class="w-10/12">
+                <fast-text-field type="text" name="title" id="title" aria-label="title" placeholder="Title"
+                    class="w-full">
+            </div>
+            <div class="w-10/12 flex justify-around my-2">
+                <div class="flex gap-2 place-items-center">
+                    <label for="status">Done</label>
+                    <fast-checkbox type="checkbox" name="status" id="status">
+
+                </div>
+                <div class="flex gap-2 place-items-center">
+                    <label for="color">Color</label>
+                    <fast-select name="color" id="color" class="min-w-min w-full">
+                        <fast-option value="blue">Blue</fast-option>
+                        <fast-option value="red">Red</fast-option>
+                        <fast-option value="green">Green</fast-option>
+                        <fast-option value="violet">Violet</fast-option>
+                        <fast-option value="orange">Orange</fast-option>
+                    </fast-select>
+                </div>
+            </div>
+            <div class="w-10/12">
+                <fast-text-area name="content" id="content" rows="10" placeholder="Content" aria-label="Content"
+                    class="w-full"></fast-text-area>
+            </div>
+            <div class="w-10/12">
+                <fast-button type="submit" class="btn">Create</fast-button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+
+        const { invoke } = window.__TAURI__.tauri;
+
+        document.querySelector("form").addEventListener("submit", e => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            let todo = {
+                status: "off"
+            };
+
+            for (let [key, v] of formData.entries()) {
+                todo[key] = v;
+            }
+
+            invoke("create_todo", { todo: todo }).then((result) => {
+                console.log(result);
+            }).catch((err) => {
+                console.error(err);
+            });
+
+        })
+
+    </script>
+
+</body>
+
+</html>
